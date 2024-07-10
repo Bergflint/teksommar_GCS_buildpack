@@ -5,8 +5,20 @@ BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 
-echo "------> Generating .profile.d file to generate google-credentials.json at startup"
-mkdir -p $BUILD_DIR/.profile.d
+echo "------> Google Cloud app detected"
+
+# Read the GOOGLE_CREDENTIALS environment variable from the env dir
 CREDENTIALS=$(cat ${ENV_DIR}/GOOGLE_CREDENTIALS)
-echo "echo ${CREDENTIALS@Q} > /app/google-credentials.json" > $BUILD_DIR/.profile.d/google-credentials.sh
+
+# Write the credentials to a JSON file in the build directory
+CREDENTIALS_FILE="$BUILD_DIR/google-credentials.json"
+echo $CREDENTIALS > $CREDENTIALS_FILE
+
+# Ensure the .profile.d directory exists
+mkdir -p $BUILD_DIR/.profile.d
+
+# Create a script to set the GOOGLE_APPLICATION_CREDENTIALS environment variable at runtime
+echo "export GOOGLE_APPLICATION_CREDENTIALS=$CREDENTIALS_FILE" > $BUILD_DIR/.profile.d/google-credentials.sh
 chmod +x $BUILD_DIR/.profile.d/google-credentials.sh
+
+echo "Buildpack setup complete."
