@@ -5,14 +5,19 @@ BUILD_DIR=${1:-}
 CACHE_DIR=${2:-}
 ENV_DIR=${3:-}
 
-echo "------> Google Cloud app detected"
+echo "------> Generating .profile.d file to set GOOGLE_APPLICATION_CREDENTIALS"
 
-# Read the GOOGLE_CREDENTIALS environment variable from the env dir
+# Read credentials from environment variable
 CREDENTIALS=$(cat ${ENV_DIR}/GOOGLE_CREDENTIALS)
 
-# Write the credentials to a JSON file in the build directory
+# Path where credentials will be stored
 CREDENTIALS_FILE="$BUILD_DIR/google-credentials.json"
 echo $CREDENTIALS > $CREDENTIALS_FILE
+echo "Credentials file created at $CREDENTIALS_FILE"
+
+# Check if the file was created
+ls -l $BUILD_DIR
+ls -l $BUILD_DIR/.profile.d
 
 # Ensure the .profile.d directory exists
 mkdir -p $BUILD_DIR/.profile.d
